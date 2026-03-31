@@ -1,0 +1,79 @@
+GitHub / badkalkyl — lokalt repo och repo på GitHub
+====================================================
+
+Uppdatering: samma text finns som webbsida github.html (stylesheet github-doc.css) för bekväm läsning.
+Öppna INTE filen via github.com/.../blob/.../github.html — där visar GitHub bara källkod, inte layout.
+Rätt adress i webbläsaren (formaterad sida): https://lundgren9.github.io/badkalkyl/github.html
+Alternativt: öppna github.html direkt från disk (då laddas github-doc.css från samma mapp).
+
+Uppdatering: kentlundgren är tillagd som collaborator under Settings → Collaborators
+på https://github.com/lundgren9/badkalkyl (publikt repo).
+
+Lokalt repo (på din dator)
+--------------------------
+• Mappen med projektfilerna plus den dolda mappen `.git` — där finns hela commit-historiken.
+• Allt du committar (`git commit`) finns bara lokalt tills du kör `git push`.
+• Arbeta gärna i grenar (`branch`) och synka med `git pull` innan du börjar om någon annan också pushar.
+
+”Globalt” här = fjärrrepo på GitHub (inte Git-inställningen `git config --global`)
+----------------------------------------------------------------------------------
+• GitHub-kopian är den delade ”sanningen” som collaborators ser efter push.
+• `git push` skickar dina commits till GitHub; `git pull` (eller `git fetch` + merge) hämtar andras ändringar.
+• Inloggning: du måste vara inloggad som ett konto som har rättighet till repot (nu: collaborator räcker för kentlundgren).
+
+Att tänka på
+------------
+• Committa ofta lokalt; pusha när du vill dela eller säkerhetskopiera till GitHub.
+• Om båda ändrar samma fil: gör `pull` före `push` och lös eventuella konflikter i editorn.
+• Public repo = vem som helst kan se koden; bara collaborators (och ägaren) kan pusha enligt behörighet.
+
+Remote i det här projektet: origin → https://github.com/lundgren9/badkalkyl.git
+
+Uppdatering: push till GitHub
+-----------------------------
+• När kentlundgren lagts till som collaborator kan `git push` fungera även om repot ägs av lundgren9,
+  förutsatt att Git använder inloggning för kentlundgren-kontot.
+• Repo på GitHub: https://github.com/lundgren9/badkalkyl
+
+Vanliga meddelanden vid push — vad de betyder
+----------------------------------------------
+
+1) `git: 'credential-manager-core' is not a git command`
+   • Betyder: Git är inställt på att använda hjälpprogrammet ”Git Credential Manager Core” för att
+     spara/läsa lösenord mot GitHub, men kommandot finns inte (saknad installation eller fel sökväg).
+   • Själva push kan ändå gå igenom om Windows/Git hittar annan inloggning.
+   • Åtgärd (valfritt): installera [Git Credential Manager](https://github.com/git-ecosystem/git-credential-manager)
+     eller ändra helper, t.ex. i global config:
+       `git config --global credential.helper manager`
+     (exakt kommando beror på vilken Git-version du har; vid osäkerhet: installera senaste Git för Windows
+     som inkluderar credential manager.)
+
+2) `Permission denied` / `403` / `access ... denied`
+   • GitHub accepterar inte den identitet du skickar med (fel konto, utgången token, eller saknad
+     collaborator-rättighet). Lösning: logga in som rätt användare eller skapa en Personal Access Token
+     för det konto som har tillgång till repot.
+
+3) `failed to push ... non-fast-forward` / `Updates were rejected`
+   • Någon (eller du från annan dator) har pushat till `main` på GitHub med commits som du inte har
+     lokalt. Först: `git pull --rebase origin main` (eller `git pull`), lös ev. konflikter, sedan `git push`.
+
+4) `Support for password authentication was removed`
+   • GitHub tillåter inte längre lösenord i HTTPS-URL:en; använd Personal Access Token eller SSH-nyckel.
+
+5) Cursor / VS Code: ”The branch 'main' has no remote branch. Would you like to publish this branch?”
+   • Betyder: du har grenen `main` lokalt med commits, men Git ser ingen motsvarande gren på fjärr-repot
+     (`origin`) ännu — t.ex. för att GitHub-repot var tomt första gången, eller spårningen (`upstream`)
+     inte satts.
+   • **OK** = publicera: motsvarar ungefär `git push -u origin main` — skapar `main` på GitHub (om den
+     saknas) och kopplar din lokala `main` till `origin/main` så framtida push/pull vet var grenen ska.
+   • **OK, Don't Ask Again** = samma sak + fråga visas inte igen för liknande lägen (efter eget omdöme).
+   • **Cancel** = inget push nu; grenen finns kvar bara lokalt tills du pushar manuellt.
+
+   Uppdatering: detta avsnitt tillagt efter dialogruta i Cursor om att publicera `main`.
+
+Format om denna fil (github.md)
+---------------------------------
+• Denna fil heter .md men innehållet är i praktiken strukturerad vanlig text (understreckade rubriker),
+  inte full Markdown-syntax — GitHub visar den som text/källkod på blob-sidan.
+• För formaterad läsning med CSS: öppna github.html via GitHub Pages (se längst upp) eller lokalt.
+• Vid ändringar: håll github.md och github.html i synk i innehåll.

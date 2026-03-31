@@ -13,8 +13,13 @@ På den publicerade sidan finns i sidhuvudet och under *Teknikinformation* motsv
 
 ## Git och GitHub (anteckningar)
 
-- **[github.html](github.html)** — samma innehåll som `github.index`, men med HTML-layout och **github-doc.css** (öppna i webbläsaren).
-- **`github.index`** — oformaterad textfil; praktisk för snabb redigering och diff. Se filens avslutande avsnitt om skillnad mot Markdown (`.md`).
+**Viktigt:** På adresser som `github.com/.../blob/main/github.html` visar GitHub **källkoden** (färgmarkerad text), inte den färdiga webbsidan. För **layout och CSS** ska du öppna sidan via **GitHub Pages**:
+
+- **Läsbart (HTML + layout):** [https://lundgren9.github.io/badkalkyl/github.html](https://lundgren9.github.io/badkalkyl/github.html)
+
+Lokalt: öppna filen `github.html` från disk i webbläsaren (då laddas `github-doc.css` från samma mapp).
+
+- **`github.md`** — källtext (strukturerad vanlig text); praktisk för redigering och diff. Se filens avslutande avsnitt om format.
 
 ## Live-version
 
