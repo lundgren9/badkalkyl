@@ -11,6 +11,11 @@ Webbaserad kalkyl för badanläggningar inom ansvar **40100** (fritidsverksamhet
 
 På den publicerade sidan finns i sidhuvudet och under *Teknikinformation* motsvarande länkar tillbaka till repot och till live-adressen.
 
+## Git och GitHub (anteckningar)
+
+- **[github.html](github.html)** — samma innehåll som `github.index`, men med HTML-layout och **github-doc.css** (öppna i webbläsaren).
+- **`github.index`** — oformaterad textfil; praktisk för snabb redigering och diff. Se filens avslutande avsnitt om skillnad mot Markdown (`.md`).
+
 ## Live-version
 
 Programmet kan köras direkt i webbläsaren via **GitHub Pages**:

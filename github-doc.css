@@ -1,0 +1,171 @@
+/* github-doc.css — layout för github.html (Git/GitHub-anteckningar)
+   Uppdatering: skapad som separat fil; länkas från github.html */
+
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap");
+
+:root {
+  --bg: #f4f6f9;
+  --paper: #ffffff;
+  --text: #1a2332;
+  --muted: #5a6b7d;
+  --accent: #0d3b66;
+  --accent-soft: #e8eef5;
+  --border: #d0dce8;
+  --code-bg: #f0f3f7;
+  --radius: 10px;
+  --shadow: 0 4px 24px rgba(13, 59, 102, 0.08);
+  --font: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Consolas", monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.doc-wrap {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.doc-paper {
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 2rem 2.25rem;
+}
+
+@media (max-width: 520px) {
+  .doc-paper {
+    padding: 1.35rem 1.1rem;
+  }
+}
+
+.doc-header {
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.doc-header h1 {
+  margin: 0 0 0.35rem;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.25;
+}
+
+.doc-lead {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.doc-lead a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.doc-note {
+  background: var(--accent-soft);
+  border-left: 4px solid var(--accent);
+  padding: 0.85rem 1rem;
+  margin: 1.25rem 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 0.95rem;
+}
+
+.doc-note strong {
+  color: var(--accent);
+}
+
+article h2 {
+  margin: 1.75rem 0 0.65rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+article h2:first-of-type {
+  margin-top: 0.5rem;
+}
+
+article p {
+  margin: 0.65rem 0;
+}
+
+article ul {
+  margin: 0.5rem 0 1rem;
+  padding-left: 1.35rem;
+}
+
+article li {
+  margin: 0.35rem 0;
+}
+
+article li::marker {
+  color: var(--accent);
+}
+
+.doc-num-list {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+
+.doc-num-list > li {
+  margin: 1rem 0;
+}
+
+.doc-num-list ul {
+  list-style: disc;
+  margin-top: 0.4rem;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--code-bg);
+  padding: 0.12em 0.35em;
+  border-radius: 4px;
+}
+
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+.doc-footer {
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.doc-footer a {
+  color: var(--accent);
+  font-weight: 600;
+}

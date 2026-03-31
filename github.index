@@ -1,6 +1,9 @@
 GitHub / badkalkyl — lokalt repo och repo på GitHub
 ====================================================
 
+Uppdatering: samma text finns som webbsida github.html (stylesheet github-doc.css) för bekväm läsning.
+Öppna github.html lokalt eller via GitHub Pages om filen ligger i repot.
+
 Uppdatering: kentlundgren är tillagd som collaborator under Settings → Collaborators
 på https://github.com/lundgren9/badkalkyl (publikt repo).
 
@@ -65,3 +68,12 @@ Vanliga meddelanden vid push — vad de betyder
    • **Cancel** = inget push nu; grenen finns kvar bara lokalt tills du pushar manuellt.
 
    Uppdatering: detta avsnitt tillagt efter dialogruta i Cursor om att publicera `main`.
+
+Format om github.index (jämfört med .md)
+-----------------------------------------
+• Filändelsen .index betyder inget speciellt för Git eller webbläsaren — det är bara ett namn du valt.
+• Innehållet är vanlig text med rubriker markerade med understrykning (--- eller ===). Det kan kännas
+  likt Markdown, men det är inte en .md-fil: de flesta editorer aktiverar Markdown-syntax/preview
+  primärt för filändelsen .md, inte för .index.
+• För formaterad läsning: använd github.html. Vid textändringar här: uppdatera github.html så att
+  båda hålls lika (eller redigera bara den ena och kopiera innehåll medvetet).

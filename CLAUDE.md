@@ -37,3 +37,4 @@ Uppdatering: omdöpt från `Claude.md` till `CLAUDE.md` och kopplad till Cursor-
 - **Teknik:** en huvudfil `index.html` med inbäddad CSS och JavaScript (ES6+); Chart.js och Google Fonts via CDN.
 - **Publicering:** GitHub Pages från repot [lundgren9/badkalkyl](https://github.com/lundgren9/badkalkyl).
 - **Underlag PDF:** `260330_badanalys.pdf` – utfall och budget per **2026-03-30** (se README).
+- **Git/GitHub-hjälp:** `github.html` + `github-doc.css` (läsbar sida); källtext även i `github.index`.

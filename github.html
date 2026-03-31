@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub / badkalkyl — lokalt repo och GitHub</title>
+  <!--
+    Uppdatering: HTML-version av github.index med läsbar layout (github-doc.css).
+    Samma innehåll som github.index; öppna den filen för oformaterad text / redigering.
+  -->
+  <link rel="stylesheet" href="github-doc.css">
+</head>
+<body>
+  <div class="doc-wrap">
+    <article class="doc-paper">
+      <header class="doc-header">
+        <h1>GitHub / badkalkyl — lokalt repo och repo på GitHub</h1>
+        <p class="doc-lead">
+          Motsvarande oformaterad text: <a href="github.index">github.index</a>
+          · Tillbaka till <a href="index.html">Badanläggningskalkyl</a>
+        </p>
+      </header>
+
+      <p class="doc-note">
+        <strong>Uppdatering:</strong> kentlundgren är tillagd som collaborator under
+        <em>Settings → Collaborators</em> på
+        <a href="https://github.com/lundgren9/badkalkyl">github.com/lundgren9/badkalkyl</a>
+        (publikt repo).
+      </p>
+
+      <section aria-labelledby="h-lokalt">
+        <h2 id="h-lokalt">Lokalt repo (på din dator)</h2>
+        <ul>
+          <li>Mappen med projektfilerna plus den dolda mappen <code>.git</code> — där finns hela commit-historiken.</li>
+          <li>Allt du committar (<code>git commit</code>) finns bara lokalt tills du kör <code>git push</code>.</li>
+          <li>Arbeta gärna i grenar (<code>branch</code>) och synka med <code>git pull</code> innan du börjar om någon annan också pushar.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="h-globalt">
+        <h2 id="h-globalt">”Globalt” här = fjärrrepo på GitHub</h2>
+        <p>(Inte Git-inställningen <code>git config --global</code>.)</p>
+        <ul>
+          <li>GitHub-kopian är den delade ”sanningen” som collaborators ser efter push.</li>
+          <li><code>git push</code> skickar dina commits till GitHub; <code>git pull</code> (eller <code>git fetch</code> + merge) hämtar andras ändringar.</li>
+          <li>Inloggning: du måste vara inloggad som ett konto som har rättighet till repot (nu: collaborator räcker för kentlundgren).</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="h-tanka">
+        <h2 id="h-tanka">Att tänka på</h2>
+        <ul>
+          <li>Committa ofta lokalt; pusha när du vill dela eller säkerhetskopiera till GitHub.</li>
+          <li>Om båda ändrar samma fil: gör <code>pull</code> före <code>push</code> och lös eventuella konflikter i editorn.</li>
+          <li>Public repo = vem som helst kan se koden; bara collaborators (och ägaren) kan pusha enligt behörighet.</li>
+        </ul>
+        <p>Remote i det här projektet: <code>origin</code> → <a href="https://github.com/lundgren9/badkalkyl.git">https://github.com/lundgren9/badkalkyl.git</a></p>
+      </section>
+
+      <section aria-labelledby="h-push">
+        <h2 id="h-push">Uppdatering: push till GitHub</h2>
+        <ul>
+          <li>När kentlundgren lagts till som collaborator kan <code>git push</code> fungera även om repot ägs av lundgren9, förutsatt att Git använder inloggning för kentlundgren-kontot.</li>
+          <li>Repo på GitHub: <a href="https://github.com/lundgren9/badkalkyl">https://github.com/lundgren9/badkalkyl</a></li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="h-meddelanden">
+        <h2 id="h-meddelanden">Vanliga meddelanden vid push — vad de betyder</h2>
+        <ol class="doc-num-list">
+          <li>
+            <code>git: 'credential-manager-core' is not a git command</code>
+            <ul>
+              <li>Betyder: Git är inställt på att använda hjälpprogrammet ”Git Credential Manager Core” för att spara/läsa lösenord mot GitHub, men kommandot finns inte (saknad installation eller fel sökväg).</li>
+              <li>Själva push kan ändå gå igenom om Windows/Git hittar annan inloggning.</li>
+              <li>Åtgärd (valfritt): installera <a href="https://github.com/git-ecosystem/git-credential-manager">Git Credential Manager</a> eller ändra helper, t.ex. i global config:</li>
+            </ul>
+            <pre><code>git config --global credential.helper manager</code></pre>
+            <p>(Exakt kommando beror på vilken Git-version du har; vid osäkerhet: installera senaste Git för Windows som inkluderar credential manager.)</p>
+          </li>
+          <li>
+            <code>Permission denied</code> / <code>403</code> / <code>access ... denied</code>
+            <ul>
+              <li>GitHub accepterar inte den identitet du skickar med (fel konto, utgången token, eller saknad collaborator-rättighet). Lösning: logga in som rätt användare eller skapa en Personal Access Token för det konto som har tillgång till repot.</li>
+            </ul>
+          </li>
+          <li>
+            <code>failed to push ... non-fast-forward</code> / <code>Updates were rejected</code>
+            <ul>
+              <li>Någon (eller du från annan dator) har pushat till <code>main</code> på GitHub med commits som du inte har lokalt. Först: <code>git pull --rebase origin main</code> (eller <code>git pull</code>), lös ev. konflikter, sedan <code>git push</code>.</li>
+            </ul>
+          </li>
+          <li>
+            <code>Support for password authentication was removed</code>
+            <ul>
+              <li>GitHub tillåter inte längre lösenord i HTTPS-URL:en; använd Personal Access Token eller SSH-nyckel.</li>
+            </ul>
+          </li>
+          <li>
+            Cursor / VS Code: ”The branch 'main' has no remote branch. Would you like to publish this branch?”
+            <ul>
+              <li>Betyder: du har grenen <code>main</code> lokalt med commits, men Git ser ingen motsvarande gren på fjärr-repot (<code>origin</code>) ännu — t.ex. för att GitHub-repot var tomt första gången, eller spårningen (<code>upstream</code>) inte satts.</li>
+              <li><strong>OK</strong> = publicera: motsvarar ungefär <code>git push -u origin main</code> — skapar <code>main</code> på GitHub (om den saknas) och kopplar din lokala <code>main</code> till <code>origin/main</code> så framtida push/pull vet var grenen ska.</li>
+              <li><strong>OK, Don't Ask Again</strong> = samma sak + fråga visas inte igen för liknande lägen (efter eget omdöme).</li>
+              <li><strong>Cancel</strong> = inget push nu; grenen finns kvar bara lokalt tills du pushar manuellt.</li>
+            </ul>
+            <p><em>Uppdatering: detta avsnitt tillagt efter dialogruta i Cursor om att publicera <code>main</code>.</em></p>
+          </li>
+        </ol>
+      </section>
+
+      <footer class="doc-footer">
+        <p>
+          <a href="github.index">github.index</a> (samma innehåll, oformaterad text för redigering eller diff)
+          · <a href="index.html">Badanläggningskalkyl</a>
+          · <a href="https://github.com/lundgren9/badkalkyl">Repo på GitHub</a>
+        </p>
+      </footer>
+    </article>
+  </div>
+</body>
+</html>
