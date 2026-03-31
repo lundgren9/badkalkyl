@@ -54,3 +54,14 @@ Vanliga meddelanden vid push — vad de betyder
 
 4) `Support for password authentication was removed`
    • GitHub tillåter inte längre lösenord i HTTPS-URL:en; använd Personal Access Token eller SSH-nyckel.
+
+5) Cursor / VS Code: ”The branch 'main' has no remote branch. Would you like to publish this branch?”
+   • Betyder: du har grenen `main` lokalt med commits, men Git ser ingen motsvarande gren på fjärr-repot
+     (`origin`) ännu — t.ex. för att GitHub-repot var tomt första gången, eller spårningen (`upstream`)
+     inte satts.
+   • **OK** = publicera: motsvarar ungefär `git push -u origin main` — skapar `main` på GitHub (om den
+     saknas) och kopplar din lokala `main` till `origin/main` så framtida push/pull vet var grenen ska.
+   • **OK, Don't Ask Again** = samma sak + fråga visas inte igen för liknande lägen (efter eget omdöme).
+   • **Cancel** = inget push nu; grenen finns kvar bara lokalt tills du pushar manuellt.
+
+   Uppdatering: detta avsnitt tillagt efter dialogruta i Cursor om att publicera `main`.
