@@ -1,0 +1,12 @@
+---
+description: badkalkyl – följ CLAUDE.md för repo-länkar, live-URL och projektkontext
+alwaysApply: true
+---
+
+# badkalkyl – projektkontext (Cursor)
+
+I repots **rot** ligger **`CLAUDE.md`** (stora bokstäver, i linje med Claude Code-praxis).
+
+**Instruktion:** Vid arbete i det här projektet, läs och använd **`CLAUDE.md`** för offentliga länkar (GitHub-repot ↔ GitHub Pages), kort teknikbeskrivning och hänvisning till README/PDF-underlag. Om något av det ändras (ny URL, ny publicering, nytt underlag), uppdatera **`CLAUDE.md`** så att den fortfarande stämmer.
+
+Regeln är `alwaysApply: true` så att kontexten tas med utan att du behöver @-referera filen varje gång.

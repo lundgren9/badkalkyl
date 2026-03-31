@@ -1,17 +1,21 @@
-# Claude.md – badkalkyl (projektkontext)
+# CLAUDE.md – badkalkyl (projektkontext)
+
+Filnamnet med **versaler** följer vanlig **Claude Code**-praxis (Anthropics CLI letar efter `CLAUDE.md` i projektroten).
 
 ## Vad den här filen är (och inte är)
 
-**Nej** – `Claude.md` är inte en fil som ”alla program” eller webbläsaren automatiskt läser först. Det finns ingen universell standard som garanterar det.
+**Nej** – varken webbläsaren eller Git läser den här filen automatiskt ”först”. Det finns ingen universell standard som tvingar alla verktyg att öppna den.
 
-**Däremot** används liknande filer ofta som **kontext för AI-assistenter** eller utvecklingsverktyg, om du (eller verktyget) väljer att ta med dem:
+**Däremot** används `CLAUDE.md` ofta som **fast projektkontext för AI** och utvecklingsverktyg:
 
 | Miljö | Vanlig praxis |
 |--------|----------------|
-| **Cursor** | Primärt `.cursor/rules/` och regler du @-refererar; `AGENTS.md` i projektroten förekommer också. Inget tvingar Cursor att alltid läsa `Claude.md` – lägg den i chatten med @ om den ska användas aktivt. |
-| **Claude Code** (Anthropics CLI) | Letar ofta efter **`CLAUDE.md`** (stora bokstäver) i projektroten. Om du använder det verktyget kan du kopiera innehållet dit eller länka mellan filerna. |
+| **Cursor** | Regeln `.cursor/rules/badkalkyl-claude.mdc` är satt till `alwaysApply: true` och instruerar assistenten att följa **`CLAUDE.md`** för länkar, publicering och projektomfattning. Övriga regler ligger under `.cursor/rules/`. |
+| **Claude Code** (Anthropics CLI) | Letar efter **`CLAUDE.md`** i projektroten — samma fil som här. |
 
 **Syfte med denna fil:** kort, beständig **projektinformation** (länkar, vad repot är) så att du eller en assistent slipper leta.
+
+Uppdatering: omdöpt från `Claude.md` till `CLAUDE.md` och kopplad till Cursor-regel `badkalkyl-claude.mdc`.
 
 ---
 
