@@ -42,6 +42,18 @@ Uppdatering: konvention tillagd — `badkalkyl.html` är avsedd som fryst kopia,
 
 ---
 
+## Konvention: **inte** `git push` utan att användaren bett om det
+
+Användaren vill **granska ändringar i Cursor** (diff, filer, ev. commit lokalt) **innan** något skickas till **GitHub**.
+
+**Instruktion till assistent:** Kör **inte** `git push` (eller motsvarande som publicerar till `github.com`) som en automatisk uppföljning av en uppgift. **Undantag:** användaren skriver uttryckligen att du ska pusha, committa och pusha, eller ”lägg upp på GitHub”.
+
+Lokala `git add` / `git commit` får användas om användaren ber om det; annars räcker det ofta att bara spara filer så att användaren själv committar och pushar när hen är nöjd.
+
+Uppdatering: tillagd så att push alltid är ett medvetet steg för användaren.
+
+---
+
 ## CLAUDE.md och en **PRD** — samma sak?
 
 **Nej, inte riktigt** — de kan **komplettera** varandra.

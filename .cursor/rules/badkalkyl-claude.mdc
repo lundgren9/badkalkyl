@@ -13,4 +13,6 @@ I repots **rot** ligger **`CLAUDE.md`** (stora bokstäver, i linje med Claude Co
 
 **Applikation:** gör ändringar bara i **`index.html`**, inte i **`badkalkyl.html`** (arkiv-/originalkopia) om användaren inte uttryckligen säger annat — se **`CLAUDE.md`**.
 
+**Git / GitHub:** kör **inte** `git push` till GitHub i slutet av uppgifter om användaren inte **uttryckligen** bett om push (användaren vill se diff i Cursor först). Se **`CLAUDE.md`**.
+
 Regeln är `alwaysApply: true` så att kontexten tas med utan att du behöver @-referera filen varje gång.
