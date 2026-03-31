@@ -9,4 +9,6 @@ I repots **rot** ligger **`CLAUDE.md`** (stora bokstäver, i linje med Claude Co
 
 **Instruktion:** Vid arbete i det här projektet, läs och använd **`CLAUDE.md`** för offentliga länkar (GitHub-repot ↔ GitHub Pages), kort teknikbeskrivning och hänvisning till README/PDF-underlag. Om något av det ändras (ny URL, ny publicering, nytt underlag), uppdatera **`CLAUDE.md`** så att den fortfarande stämmer.
 
+**HTML-filer i repot:** länka och utgå från **GitHub Pages**-URL:er (`https://lundgren9.github.io/badkalkyl/…`) när sidan ska visas eller diskuteras — **inte** `github.com/.../blob/...`, såvida användaren inte ber om källkods-/blob-vy eller lokalt öppnande.
+
 Regeln är `alwaysApply: true` så att kontexten tas med utan att du behöver @-referera filen varje gång.
