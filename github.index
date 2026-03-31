@@ -1,0 +1,25 @@
+GitHub / badkalkyl — lokalt repo och repo på GitHub
+====================================================
+
+Uppdatering: kentlundgren är tillagd som collaborator under Settings → Collaborators
+på https://github.com/lundgren9/badkalkyl (publikt repo).
+
+Lokalt repo (på din dator)
+--------------------------
+• Mappen med projektfilerna plus den dolda mappen `.git` — där finns hela commit-historiken.
+• Allt du committar (`git commit`) finns bara lokalt tills du kör `git push`.
+• Arbeta gärna i grenar (`branch`) och synka med `git pull` innan du börjar om någon annan också pushar.
+
+”Globalt” här = fjärrrepo på GitHub (inte Git-inställningen `git config --global`)
+----------------------------------------------------------------------------------
+• GitHub-kopian är den delade ”sanningen” som collaborators ser efter push.
+• `git push` skickar dina commits till GitHub; `git pull` (eller `git fetch` + merge) hämtar andras ändringar.
+• Inloggning: du måste vara inloggad som ett konto som har rättighet till repot (nu: collaborator räcker för kentlundgren).
+
+Att tänka på
+------------
+• Committa ofta lokalt; pusha när du vill dela eller säkerhetskopiera till GitHub.
+• Om båda ändrar samma fil: gör `pull` före `push` och lös eventuella konflikter i editorn.
+• Public repo = vem som helst kan se koden; bara collaborators (och ägaren) kan pusha enligt behörighet.
+
+Remote i det här projektet: origin → https://github.com/lundgren9/badkalkyl.git
