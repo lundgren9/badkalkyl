@@ -49,7 +49,7 @@ Uppdatering: denna konvention tillagd på användarens önskemål.
 - **Källkod** (repo, issues, kloning): https://github.com/lundgren9/badkalkyl
 
 - **README.md** på GitHub länkar till live-sidan och beskriver repot.
-- **`index.html`** (och `badkalkyl.html`) har i **sidhuvudet** och under **Teknikinformation** länkar till både repot och live-adressen.
+- **`index.html`** (och `badkalkyl.html`): i **sidhuvudet** länk till repot, **`CLAUDE.md`** (projektkontext) och **Git/GitHub-hjälp** (`github.html`). Under **Teknikinformation** finns även repot, live-URL och `github.html`.
 
 ---
 
