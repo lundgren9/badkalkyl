@@ -23,3 +23,34 @@ Att tänka på
 • Public repo = vem som helst kan se koden; bara collaborators (och ägaren) kan pusha enligt behörighet.
 
 Remote i det här projektet: origin → https://github.com/lundgren9/badkalkyl.git
+
+Uppdatering: push till GitHub
+-----------------------------
+• När kentlundgren lagts till som collaborator kan `git push` fungera även om repot ägs av lundgren9,
+  förutsatt att Git använder inloggning för kentlundgren-kontot.
+• Repo på GitHub: https://github.com/lundgren9/badkalkyl
+
+Vanliga meddelanden vid push — vad de betyder
+----------------------------------------------
+
+1) `git: 'credential-manager-core' is not a git command`
+   • Betyder: Git är inställt på att använda hjälpprogrammet ”Git Credential Manager Core” för att
+     spara/läsa lösenord mot GitHub, men kommandot finns inte (saknad installation eller fel sökväg).
+   • Själva push kan ändå gå igenom om Windows/Git hittar annan inloggning.
+   • Åtgärd (valfritt): installera [Git Credential Manager](https://github.com/git-ecosystem/git-credential-manager)
+     eller ändra helper, t.ex. i global config:
+       `git config --global credential.helper manager`
+     (exakt kommando beror på vilken Git-version du har; vid osäkerhet: installera senaste Git för Windows
+     som inkluderar credential manager.)
+
+2) `Permission denied` / `403` / `access ... denied`
+   • GitHub accepterar inte den identitet du skickar med (fel konto, utgången token, eller saknad
+     collaborator-rättighet). Lösning: logga in som rätt användare eller skapa en Personal Access Token
+     för det konto som har tillgång till repot.
+
+3) `failed to push ... non-fast-forward` / `Updates were rejected`
+   • Någon (eller du från annan dator) har pushat till `main` på GitHub med commits som du inte har
+     lokalt. Först: `git pull --rebase origin main` (eller `git pull`), lös ev. konflikter, sedan `git push`.
+
+4) `Support for password authentication was removed`
+   • GitHub tillåter inte längre lösenord i HTTPS-URL:en; använd Personal Access Token eller SSH-nyckel.
