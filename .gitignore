@@ -1,0 +1,15 @@
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Lokala miljöfiler (hemligheter ska aldrig committas)
+.env
+.env.local
+*.local

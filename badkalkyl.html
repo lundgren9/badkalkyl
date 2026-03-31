@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Badanläggningskalkyl – Simrishamns kommun</title>
+
+  <!--
+    ================================================================
+    EXTERNA BIBLIOTEK VIA CDN
+    ================================================================
+    1) Google Fonts – Barlow Condensed (rubriker), Source Sans 3 (text),
+       JetBrains Mono (siffror). Laddas från fonts.googleapis.com.
+    2) Chart.js 4.4.1 – stapel- och cirkeldiagram på Totalt-fliken.
+       Hämtas från cdnjs.cloudflare.com (UMD-build, SRI-verifierad).
+    ================================================================
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"
+          integrity="sha512-ZwR1/gSZM3ai6vCdI+LVF1zSq/5HznD3oD+sCoJrzXJ+yKqtkYIkWilD154yeNd1pY9Jer3wuln/8QdXV1QeQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <style>
+    /* ============================================================
+       CSS CUSTOM PROPERTIES – design-tokens och färgpalett
+       Ändra värden här för att justera hela applikationens utseende.
+       ============================================================ */
+    :root {
+      --bg:          #EEF3F8;
+      --surface:     #FFFFFF;
+      --border:      #D0DCE8;
+      --text:        #1C2B3A;
+      --muted:       #607B93;
+      --navy:        #0D3B66;
+      --teal:        #1B7A8B;
+      --green:       #2D6A4F;
+      --terra:       #BE5A14;
+      --amber:       #E8930A;
+      --pos:         #1A6830;
+      --neg:         #B5280F;
+      --warn-text:   #7A4B00;
+      --warn-bg:     #FFF8E6;
+      --radius:      8px;
+      --shadow:      0 2px 10px rgba(13,59,102,0.09);
+      --shadow-lg:   0 6px 24px rgba(13,59,102,0.14);
+      --h:           'Barlow Condensed', sans-serif;
+      --b:           'Source Sans 3', sans-serif;
+      --m:           'JetBrains Mono', monospace;
+    }
+
+    /* Varje flik/bad får sin accentfärg via CSS-variabeln --accent */
+    .p-tobisviken { --accent: var(--teal);  --accent-bg: #E5F2F5; }
+    .p-hammenhog  { --accent: var(--green); --accent-bg: #E5F1EB; }
+    .p-korsavad   { --accent: var(--terra); --accent-bg: #FAF0E8; }
+    .p-totalt     { --accent: var(--navy);  --accent-bg: #E8EEF5; }
+
+    /* ============================================================
+       RESET OCH GRUNDSTILAR
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--b);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       APPLIKATIONSHUVUD
+       ============================================================ */
+    .app-header {
+      background: var(--navy);
+      color: white;
+      padding: 18px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .header-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 3px;
+    }
+
+    .app-header h1 {
+      font-family: var(--h);
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      line-height: 1.15;
+    }
+
+    .header-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+      margin-top: 2px;
+    }
+
+    /* Årsväljare i headern */
+    .year-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+    }
+
+    .year-block label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .year-block input {
+      font-family: var(--m);
+      font-size: 26px;
+      font-weight: 700;
+      width: 96px;
+      padding: 5px 10px;
+      background: rgba(255,255,255,0.1);
+      border: 1.5px solid rgba(255,255,255,0.22);
+      border-radius: var(--radius);
+      color: white;
+      text-align: center;
+      outline: none;
+      transition: background .15s;
+    }
+
+    .year-block input:focus {
+      background: rgba(255,255,255,0.18);
+      border-color: rgba(255,255,255,0.45);
+    }
+
+    /* ============================================================
+       FLIK-NAVIGATION
+       ============================================================ */
+    .tab-nav {
+      display: flex;
+      background: var(--surface);
+      border-bottom: 2px solid var(--border);
+      padding: 0 20px;
+      overflow-x: auto;
+      gap: 2px;
+    }
+
+    .tab-btn {
+      font-family: var(--b);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 13px 18px;
+      border: none;
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      white-space: nowrap;
+      transition: color .15s, border-color .15s;
+    }
+
+    .tab-btn:hover { color: var(--navy); }
+
+    /* Aktiv flik – border-bottom matchar respektive bads accentfärg */
+    .tab-btn.active[data-tab="tobisviken"] { color: var(--navy); border-bottom-color: var(--teal); }
+    .tab-btn.active[data-tab="hammenhog"]  { color: var(--navy); border-bottom-color: var(--green); }
+    .tab-btn.active[data-tab="korsavad"]   { color: var(--navy); border-bottom-color: var(--terra); }
+    .tab-btn.active[data-tab="totalt"]     { color: var(--navy); border-bottom-color: var(--navy); }
+
+    /* ============================================================
+       FLIK-SEKTIONER – döljning/visning
+       ============================================================ */
+    .tab-section {
+      display: none;
+      padding: 24px 32px 90px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .tab-section.active { display: block; }
+
+    /* ============================================================
+       BAD-RUBRIK MED BADGES
+       ============================================================ */
+    .pool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pool-title {
+      font-family: var(--h);
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.01em;
+      line-height: 1.1;
+    }
+
+    .badges { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 7px; }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 20px;
+      background: var(--accent-bg);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    /* Återställ-knapp i pool-headern */
+    .reset-btn {
+      font-family: var(--b);
+      font-size: 12px;
+      padding: 7px 14px;
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ============================================================
+       TVÅKOLUMNSLAYOUT
+       ============================================================ */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* ============================================================
+       KORTAR (cards)
+       ============================================================ */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-head {
+      background: var(--accent);
+      padding: 11px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-head h3 {
+      font-family: var(--h);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: white;
+    }
+
+    /* ============================================================
+       DATATABELLER – intäkter och kostnader
+       ============================================================ */
+    .data-tbl {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-tbl td {
+      padding: 8px 18px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Kontokolumnen */
+    .data-tbl td.konto {
+      color: var(--muted);
+      font-size: 11px;
+      font-family: var(--m);
+      width: 48px;
+      padding-right: 4px;
+    }
+
+    /* Beloppskolumnen – högerställd med mono-font */
+    .data-tbl td.amt {
+      text-align: right;
+      font-family: var(--m);
+      font-size: 13px;
+      font-weight: 600;
+      width: 130px;
+    }
+
+    /* Summeringsrad */
+    .data-tbl tr.sum td {
+      background: #F4F7FB;
+      font-weight: 700;
+      border-top: 2px solid var(--border) !important;
+      border-bottom: none;
+    }
+
+    .data-tbl tr.sum td.amt {
+      color: var(--accent);
+      font-size: 14px;
+    }
+
+    /* Redigerbart beloppsfeld */
+    input.amt-in {
+      font-family: var(--m);
+      font-size: 13px;
+      font-weight: 600;
+      width: 90px;
+      padding: 3px 7px;
+      text-align: right;
+      border: 1.5px solid var(--border);
+      border-radius: 5px;
+      background: #F8FAFB;
+      color: var(--text);
+      outline: none;
+      transition: border-color .12s, background .12s;
+    }
+
+    input.amt-in:focus {
+      border-color: var(--accent);
+      background: white;
+    }
+
+    /* Notis om internhyra och energi i hyran */
+    .tag-pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .tag-orange { background: #FFF3CD; color: #7A4B00; border: 1px solid #F5C542; }
+    .tag-blue   { background: #E0F0F5; color: #1B5E6B; border: 1px solid #9AC9D5; }
+
+    /* Obs-banner om energi i hyran */
+    .energy-banner {
+      font-size: 12px;
+      color: var(--warn-text);
+      background: var(--warn-bg);
+      padding: 7px 18px;
+      border-bottom: 1px solid #F5C542;
+    }
+
+    /* Fotnot under kort */
+    .foot-note {
+      font-size: 11px;
+      color: var(--muted);
+      font-style: italic;
+      padding: 7px 18px 9px;
+      border-top: 1px dashed var(--border);
+    }
+
+    /* ============================================================
+       PERSONALKOSTNADER – sektionskort
+       ============================================================ */
+    .personal-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    /* Parameterrad – LKP, månadslön, timlön */
+    .param-bar {
+      display: flex;
+      gap: 24px;
+      padding: 14px 18px;
+      background: #F4F7FB;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .param-grp {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .param-grp label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .param-grp input {
+      font-family: var(--m);
+      font-size: 14px;
+      font-weight: 600;
+      width: 100px;
+      padding: 5px 9px;
+      text-align: right;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      background: white;
+      color: var(--text);
+      outline: none;
+      transition: border-color .12s;
+    }
+
+    .param-grp input:focus { border-color: var(--accent); }
+
+    .param-sfx {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       PRESET-KNAPPAR – personalbesättningsnivåer
+       ============================================================ */
+    .preset-bar {
+      padding: 11px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .preset-lbl {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 4px;
+    }
+
+    .preset-btn {
+      font-family: var(--b);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      background: white;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .13s;
+      line-height: 1.4;
+      text-align: left;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .preset-btn.on {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .preset-sub {
+      display: block;
+      font-size: 10px;
+      font-weight: 400;
+      opacity: 0.8;
+    }
+
+    /* ============================================================
+       PERSONALTABELL – FTE och timanst
+       ============================================================ */
+    .pers-tbl {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .pers-tbl th {
+      text-align: right;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 8px 18px 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pers-tbl th:first-child { text-align: left; }
+
+    .pers-tbl td {
+      padding: 8px 18px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+      text-align: right;
+      font-family: var(--m);
+    }
+
+    .pers-tbl td:first-child {
+      font-family: var(--b);
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .pers-tbl tr.tot-row td {
+      font-weight: 700;
+      background: #F4F7FB;
+      border-top: 2px solid var(--border);
+      font-size: 14px;
+      color: var(--accent);
+    }
+
+    .pers-tbl td.hi { font-weight: 700; color: var(--accent); }
+
+    /* Inmatningsfeld i personaltabellen */
+    input.fte-in {
+      font-family: var(--m);
+      font-size: 13px;
+      font-weight: 600;
+      width: 76px;
+      padding: 3px 6px;
+      text-align: right;
+      border: 1.5px solid var(--border);
+      border-radius: 5px;
+      background: #F8FAFB;
+      color: var(--text);
+      outline: none;
+    }
+
+    input.fte-in:focus {
+      border-color: var(--accent);
+      background: white;
+    }
+
+    /* ============================================================
+       NETTOKORT – summering
+       ============================================================ */
+    .netto-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      border: 2px solid var(--accent);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .netto-head {
+      background: var(--accent);
+      color: white;
+      padding: 11px 22px;
+      font-family: var(--h);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .netto-tbl { width: 100%; border-collapse: collapse; }
+
+    .netto-tbl td {
+      padding: 10px 22px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .netto-tbl td:last-child {
+      text-align: right;
+      font-family: var(--m);
+      font-weight: 600;
+      width: 130px;
+    }
+
+    .netto-tbl tr.grand td {
+      font-family: var(--h);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      background: #F4F7FB;
+      border-top: 2px solid var(--accent) !important;
+      padding: 13px 22px;
+    }
+
+    .netto-tbl tr.adj-row td {
+      background: var(--warn-bg);
+      font-size: 12px;
+      color: var(--warn-text);
+    }
+
+    /* Färgkodning av värden */
+    .vp { color: var(--pos); }   /* positivt */
+    .vn { color: var(--neg); }   /* negativt */
+
+    /* ============================================================
+       TOTALT-FLIK
+       ============================================================ */
+    .sum-tbl { width: 100%; border-collapse: collapse; }
+
+    .sum-tbl th {
+      text-align: right;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: white;
+      padding: 10px 14px;
+      background: var(--navy);
+    }
+
+    .sum-tbl th:first-child { text-align: left; }
+
+    .sum-tbl td {
+      padding: 10px 14px;
+      font-size: 13px;
+      font-family: var(--m);
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sum-tbl td:first-child {
+      font-family: var(--b);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .sum-tbl tr:nth-child(even) td { background: #F8FAFB; }
+
+    .sum-tbl tr.tot-row td {
+      font-weight: 700;
+      font-size: 14px;
+      background: #EEF3F8;
+      border-top: 2px solid var(--navy);
+      border-bottom: none;
+    }
+
+    /* Diagramgrid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 7fr 4fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 720px) { .charts-grid { grid-template-columns: 1fr; } }
+
+    .chart-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 20px;
+    }
+
+    .chart-ttl {
+      font-family: var(--h);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-bottom: 14px;
+    }
+
+    /* ============================================================
+       TEKNIK-MODAL KNAPP (fast position nere till höger)
+       ============================================================ */
+    .tech-fab {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      background: var(--navy);
+      color: white;
+      border: none;
+      border-radius: 28px;
+      padding: 9px 18px;
+      font-family: var(--b);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 1000;
+      transition: background .13s, transform .13s;
+    }
+
+    .tech-fab:hover { background: #183E68; transform: translateY(-2px); }
+
+    /* ============================================================
+       MODAL
+       ============================================================ */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13,59,102,0.48);
+      z-index: 2000;
+      align-items: flex-end;
+      justify-content: flex-end;
+      padding: 22px;
+    }
+
+    .modal-bg.open { display: flex; }
+
+    .modal-box {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 60px rgba(13,59,102,0.3);
+      width: 490px;
+      max-width: 100%;
+      max-height: 82vh;
+      overflow-y: auto;
+    }
+
+    .modal-hd {
+      background: var(--navy);
+      color: white;
+      padding: 15px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+    }
+
+    .modal-hd h2 {
+      font-family: var(--h);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+    }
+
+    .modal-x {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      opacity: .7;
+      transition: opacity .13s;
+    }
+
+    .modal-x:hover { opacity: 1; }
+
+    .modal-bd { padding: 22px; }
+
+    .tech-sec { margin-bottom: 20px; }
+
+    .tech-sec h3 {
+      font-family: var(--h);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.07em;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tech-sec p {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .tech-sec code {
+      font-family: var(--m);
+      font-size: 12px;
+      background: #EEF3F8;
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--terra);
+    }
+
+    .lib-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 8px 12px;
+      background: #F4F7FB;
+      border-radius: 6px;
+      border-left: 3px solid var(--teal);
+      margin-bottom: 8px;
+    }
+
+    .lib-name { font-size: 13px; font-weight: 700; min-width: 150px; }
+    .lib-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     APPLIKATIONSHUVUD
+     Visar titel, förvaltning och årsväljare.
+     ============================================================ -->
+<header class="app-header">
+  <div>
+    <div class="header-tag">Simrishamns kommun · Kultur- och fritidsförvaltningen</div>
+    <h1>Badanläggningskalkyl</h1>
+    <div class="header-sub">Ansvar 40100 (Fritidsverksamhet) · Verksamhet 3400 · Kontoplan Kommun-BAS 26</div>
+  </div>
+  <div class="year-block">
+    <label for="yr">Kalkyleringsår</label>
+    <!--
+      Årsväljaren påverkar rubriker och etiketter i hela kalkylen.
+      Defaultvärde: 2026. Ändring triggar onYearChange() som uppdaterar
+      state.year och renderar om aktiv flik.
+    -->
+    <input type="number" id="yr" value="2026" min="2020" max="2040"
+           onchange="onYearChange(this.value)" title="Ange det år kalkylen avser">
+  </div>
+</header>
+
+<!-- ============================================================
+     FLIKAR – en per bad plus Totalt
+     data-tab-attributet matchar pool-id i JavaScript-state.
+     ============================================================ -->
+<nav class="tab-nav" role="tablist">
+  <button class="tab-btn active" data-tab="tobisviken"
+          onclick="switchTab('tobisviken')" role="tab">🌊 Tobisviksbadet</button>
+  <button class="tab-btn" data-tab="hammenhog"
+          onclick="switchTab('hammenhog')" role="tab">🏊 Hammenhögsbadet</button>
+  <button class="tab-btn" data-tab="korsavad"
+          onclick="switchTab('korsavad')" role="tab">🏛 Korsavadbadet</button>
+  <button class="tab-btn" data-tab="totalt"
+          onclick="switchTab('totalt')" role="tab">📊 Totalt / Sammandrag</button>
+</nav>
+
+<!-- ============================================================
+     FLIKINNEHÅLL – fylls av JavaScript via innerHTML
+     Varje section tilldelas poolens CSS-klass för accentfärg.
+     ============================================================ -->
+<main>
+  <section id="tab-tobisviken" class="tab-section p-tobisviken active"></section>
+  <section id="tab-hammenhog"  class="tab-section p-hammenhog"></section>
+  <section id="tab-korsavad"   class="tab-section p-korsavad"></section>
+  <section id="tab-totalt"     class="tab-section p-totalt"></section>
+</main>
+
+<!-- ============================================================
+     TEKNIK-KNAPP (FAB – Floating Action Button)
+     Fast position nere till höger. Öppnar teknik-modalen.
+     ============================================================ -->
+<button class="tech-fab" onclick="openModal()" title="Visa teknisk information">
+  ⚙ Teknikinformation
+</button>
+
+<!-- ============================================================
+     TEKNIK-MODAL
+     Beskriver bibliotek, tekniska val och beräkningsmetodik.
+     ============================================================ -->
+<div class="modal-bg" id="mOverlay" onclick="overlayClick(event)">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <h2>⚙ TEKNIKINFORMATION</h2>
+      <button class="modal-x" onclick="closeModal()" aria-label="Stäng">✕</button>
+    </div>
+    <div class="modal-bd">
+
+      <div class="tech-sec">
+        <h3>Externa bibliotek via CDN</h3>
+        <!--
+          CDN-valet: cdnjs.cloudflare.com används för Chart.js eftersom det
+          är välkänt, pålitligt och erbjuder SRI-kontroll (Subresource Integrity).
+          Google Fonts används för typografin eftersom det inte kräver lokal fontinstallation.
+          Inga andra externa beroenden finns.
+        -->
+        <div class="lib-row">
+          <div class="lib-name">Chart.js 4.4.1</div>
+          <div class="lib-desc">Interaktiva stapel- och cirkeldiagram på Totalt-fliken. Hämtas från <strong>cdnjs.cloudflare.com</strong> som UMD-build med SRI-hash. Valdes framför D3.js (enklare API) och Highcharts (gratis för icke-kommersiellt bruk). Inga ytterligare plugins behövs.</div>
+        </div>
+        <div class="lib-row">
+          <div class="lib-name">Google Fonts</div>
+          <div class="lib-desc"><em>Barlow Condensed</em> (rubriker), <em>Source Sans 3</em> (brödtext), <em>JetBrains Mono</em> (siffror och konton). Laddas via fonts.googleapis.com med <code>display=swap</code> för snabb rendering.</div>
+        </div>
+      </div>
+
+      <div class="tech-sec">
+        <h3>Teknisk arkitektur</h3>
+        <p>Applikationen är byggd i <strong>ren HTML5 + CSS3 + Vanilla JavaScript (ES6+)</strong> utan ramverk. Filen är helt fristående och kan öppnas i valfri webbläsare utan byggverktyg eller server.</p>
+        <p>All data lagras i ett centralt JavaScript-objekt (<code>state</code>). Vid varje inmatning anropas en handler-funktion som uppdaterar state och sedan anropar <code>renderAll()</code>, som skriver om aktivt flikinnehåll via <code>innerHTML</code>.</p>
+        <p>Sifferformatering: <code>Intl.NumberFormat('sv-SE')</code> ger korrekt svensk tusenseparator (space) och decimal (komma).</p>
+        <p>CSS Custom Properties (<code>:root { --variabel }</code>) används för alla färger och typsnitt, vilket möjliggör enkel temaändring.</p>
+      </div>
+
+      <div class="tech-sec">
+        <h3>Beräkningsmetodik</h3>
+        <p><strong>Heltidsanst. (FTE) – årsbelopp i tkr:</strong></p>
+        <p><code>Antal FTE × Månadslön × 12 × (1 + LKP/100) ÷ 1000</code></p>
+        <p><strong>Timanst. – årsbelopp i tkr:</strong></p>
+        <p><code>Antal timmar × Timlön × (1 + LKP/100) ÷ 1000</code></p>
+        <p><strong>LKP – Lönekostnadspålägg (default 41%)</strong> inkluderar arbetsgivaravgifter (31,42%), avtalspension (ca 5–6%) samt övriga personalomkostnader. Gäller för samtliga anställningsformer.</p>
+        <p><strong>Justerat netto</strong> = Netto + Lokalhyra (kto 6010). Internhyran kompenseras till KoF via rambudget och är en genomgångskostnad.</p>
+      </div>
+
+      <div class="tech-sec">
+        <h3>Datakällor och kontoplan</h3>
+        <p>Defaultvärden baseras på Simrishamns kommuns budget 2026 och utfall per 2026-02-28 (Hypergene-uttag, KoF, ansvar 40100). Personalkostnadsestimat är analytiska tillägg – lönekostnader för badpersonal kodas i ekonomisystemet utan objektkoppling till respektive anläggning.</p>
+        <p>Lagrum: LKBR (2018:597), Kommunallagen (2017:725). Kontoplan: Kommun-BAS 26 (SKR, 2025).</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT – all logik, rendering och händelsehantering
+     ============================================================ -->
+<script>
+
+/* ==============================================================
+   DATATILLSTÅND (state)
+   Håller ALLA redigerbara värden för applikationen.
+   Belopp anges i tkr (tusentals kronor).
+   Negativa värden = kostnader. Positiva = intäkter.
+   ============================================================== */
+const state = {
+  year: 2026,
+
+  pools: {
+
+    /* ------------------------------------------------------------------
+       TOBISVIKSBADET – Objekt 30013
+       Utomhusbad med 50m-bassäng och plaskbassäng.
+       Säsongsdrift ca juni–aug. Renoverat och återöppnat 2024.
+       Energi redovisas SEPARAT under kto 62 (ej i hyran).
+       Källa: Budget 2026, Hypergene-uttag per 2026-02-28.
+       ------------------------------------------------------------------ */
+    tobisviken: {
+      id: 'tobisviken',
+      name: 'Tobisviksbadet',
+      objectCode: '30013',
+      type: 'Utomhusbad (säsong)',
+      energiIHyra: false,          // Energi redovisas separat kto 62
+
+      // Intäkter (tkr) – positiva
+      revenue: {
+        forsaljning: 250,          // kto 30 – Försäljningsintäkter (kiosk mm)
+        taxor:       1100,         // kto 31 – Taxor och avgifter (kto 3130)
+      },
+
+      // Kostnader exkl. personal (tkr) – negativa
+      costs: {
+        lokalhyra:   -4252,        // kto 6010 – internhyra (kompenseras till KoF)
+        energi:      -950,         // kto 62   – bränsle, energi, vatten
+        forbrukn:    -130,         // kto 64   – förbrukningsinvent. och materiel
+        transport:   0,            // kto 69   – transportmedel
+        ovrigt:      -10,          // kto 7    – övriga verksamhetskostnader
+        ovrigtII:    -1,           // kto 8    – övriga intäkter/kostnader
+      },
+
+      // Personalkostnader – ej objektkodade på 30013 i ekonomisystemet
+      personal: {
+        currentPreset: 'normal',   // aktiv besättningsnivå
+        fte:    2.0,               // heltidstjänster (årsarbetare)
+        timmar: 1200,              // timanst. timmar per år
+        lkp:    41,                // lönekostnadspålägg %
+        manadsLon: 32000,          // genomsnittlig månadslön kr
+        timLon:    180,            // genomsnittlig timlön kr
+      },
+
+      // Tre förinställda personalbesättningsnivåer
+      presets: {
+        minimal: { fte: 1.0, timmar:  500, label: 'Minimal', sub: 'Begränsad öppning, kort säsong' },
+        normal:  { fte: 2.0, timmar: 1200, label: 'Normal',  sub: 'Standard säsongsöppning jun–aug' },
+        hog:     { fte: 3.0, timmar: 2500, label: 'Hög',     sub: 'Utökad säsong, daglig bemanning' },
+      },
+
+      // Sparade original-defaultvärden – används av återställ-funktion
+      _defaults: {
+        revenue:  { forsaljning: 250, taxor: 1100 },
+        costs:    { lokalhyra: -4252, energi: -950, forbrukn: -130, transport: 0, ovrigt: -10, ovrigtII: -1 },
+        personal: { fte: 2.0, timmar: 1200, lkp: 41, manadsLon: 32000, timLon: 180 },
+      },
+    },
+
+    /* ------------------------------------------------------------------
+       HAMMENHÖGSBADET – Objekt 30402
+       Litet utomhusbad i Hammenhög. Landsbygdsbad med kortare säsong.
+       Bästa täckningsgrad av de tre (ca 79% av kostnaderna täcks av intäkter).
+       ------------------------------------------------------------------ */
+    hammenhog: {
+      id: 'hammenhog',
+      name: 'Hammenhögsbadet',
+      objectCode: '30402',
+      type: 'Utomhusbad (säsong)',
+      energiIHyra: false,
+
+      revenue: {
+        forsaljning: 135,          // kto 30
+        taxor:       380,          // kto 31 – kto 3130
+      },
+
+      costs: {
+        lokalhyra:   -285,         // kto 6010 (kompenseras till KoF)
+        energi:      -200,         // kto 62
+        forbrukn:    -100,         // kto 64
+        transport:   0,            // kto 69
+        ovrigt:      -59,          // kto 7
+        ovrigtII:    -9,           // kto 8
+      },
+
+      personal: {
+        currentPreset: 'normal',
+        fte:    1.0,
+        timmar: 600,
+        lkp:    41,
+        manadsLon: 32000,
+        timLon:    180,
+      },
+
+      presets: {
+        minimal: { fte: 0.5, timmar:  200, label: 'Minimal', sub: 'Begränsad öppning' },
+        normal:  { fte: 1.0, timmar:  600, label: 'Normal',  sub: 'Standardöppning sommarsäsong' },
+        hog:     { fte: 1.5, timmar: 1000, label: 'Hög',     sub: 'Utökade öppettider' },
+      },
+
+      _defaults: {
+        revenue:  { forsaljning: 135, taxor: 380 },
+        costs:    { lokalhyra: -285, energi: -200, forbrukn: -100, transport: 0, ovrigt: -59, ovrigtII: -9 },
+        personal: { fte: 1.0, timmar: 600, lkp: 41, manadsLon: 32000, timLon: 180 },
+      },
+    },
+
+    /* ------------------------------------------------------------------
+       KORSAVADBADET – Objekt 30032 / 30012
+       Inomhushall med 25m-bassäng, undervisningsbassäng, bastu.
+       Totalrenoverad av PEAB (ca 100 mkr). Planerad öppning hösten 2026.
+       OBS: Energikostnader ingår i lokalhyran (kto 6010) för detta bad!
+       ------------------------------------------------------------------ */
+    korsavad: {
+      id: 'korsavad',
+      name: 'Korsavadbadet',
+      objectCode: '30032 / 30012',
+      type: 'Inomhusbad (öppnar ht 2026)',
+      energiIHyra: true,           // Energi ingår i kto 6010 – viktigt!
+
+      revenue: {
+        forsaljning: 270,          // kto 30
+        taxor:       741,          // kto 31 – kto 3130
+      },
+
+      costs: {
+        lokalhyra:   -6049,        // kto 6010 – INKL energikostnader (kompenseras)
+        energi:      0,            // Ingår i lokalhyran – redovisas ej separat
+        forbrukn:    -370,         // kto 64 – inkl livsmedel, mat-materiel
+        transport:   -107,         // kto 69 – kostnader för transportmedel
+        ovrigt:      -292,         // kto 7
+        ovrigtII:    -31,          // kto 8
+      },
+
+      personal: {
+        currentPreset: 'normal',
+        fte:    6.0,
+        timmar: 1500,
+        lkp:    41,
+        manadsLon: 32000,
+        timLon:    180,
+      },
+
+      presets: {
+        minimal: { fte: 3.0, timmar:  500, label: 'Minimal', sub: 'Begränsad öppning del av 2026' },
+        normal:  { fte: 6.0, timmar: 1500, label: 'Normal',  sub: 'Normaldrift, ht 2026' },
+        hog:     { fte:10.0, timmar: 3000, label: 'Hög',     sub: 'Fullskaledrift, långa öppettider' },
+      },
+
+      _defaults: {
+        revenue:  { forsaljning: 270, taxor: 741 },
+        costs:    { lokalhyra: -6049, energi: 0, forbrukn: -370, transport: -107, ovrigt: -292, ovrigtII: -31 },
+        personal: { fte: 6.0, timmar: 1500, lkp: 41, manadsLon: 32000, timLon: 180 },
+      },
+    },
+  },
+};
+
+
+/* ==============================================================
+   BERÄKNINGSFUNKTIONER
+   Alla belopp i tkr (tusentals kronor).
+   ============================================================== */
+
+/** Summerar alla intäktsposter för ett bad */
+function calcRev(pool) {
+  return Object.values(pool.revenue).reduce((s, v) => s + (Number(v) || 0), 0);
+}
+
+/** Summerar alla kostnadsposter exkl. personal */
+function calcCosts(pool) {
+  return Object.values(pool.costs).reduce((s, v) => s + (Number(v) || 0), 0);
+}
+
+/**
+ * Beräknar total personalkostnad i tkr (returnerar negativt tal = kostnad).
+ * Heltid: fte × månadslön × 12 × LKP-faktor / 1000
+ * Timmar: timmar × timlön × LKP-faktor / 1000
+ */
+function calcPersonal(pool) {
+  const p = pool.personal;
+  const lkpF = 1 + p.lkp / 100;
+  const fteCost  = p.fte    * p.manadsLon * 12 * lkpF / 1000;
+  const timCost  = p.timmar * p.timLon        * lkpF / 1000;
+  return -(fteCost + timCost);
+}
+
+/** Totalt netto = intäkter + kostnader (neg) + personal (neg) */
+function calcNetto(pool) {
+  return calcRev(pool) + calcCosts(pool) + calcPersonal(pool);
+}
+
+/**
+ * Justerat netto = netto + lokalhyra.
+ * Internhyran (kto 6010) kompenseras till KoF via rambudget,
+ * varför den rensas bort för att visa "verkligt" driftsnetto.
+ */
+function calcNettoJust(pool) {
+  return calcNetto(pool) - (Number(pool.costs.lokalhyra) || 0);
+}
+
+
+/* ==============================================================
+   FORMATTERING
+   Intl.NumberFormat ger korrekt svensk talformatering
+   (space som tusensep, komma som decimal).
+   ============================================================== */
+const svFmt = new Intl.NumberFormat('sv-SE', { maximumFractionDigits: 0 });
+
+/** Formaterar tkr-belopp: negativt → "−X", noll → "0", positivt → "X" */
+function fmt(v) {
+  const n = Number(v) || 0;
+  if (n < 0) return '−' + svFmt.format(Math.abs(n));
+  return svFmt.format(n);
+}
+
+/** Samma som fmt men med + för positiva */
+function fmtSign(v) {
+  const n = Number(v) || 0;
+  if (n > 0) return '+' + svFmt.format(n);
+  if (n < 0) return '−' + svFmt.format(Math.abs(n));
+  return '0';
+}
+
+/** CSS-klass för positiva/negativa värden */
+function vc(v) {
+  const n = Number(v) || 0;
+  return n >= 0 ? 'vp' : 'vn';
+}
+
+
+/* ==============================================================
+   RENDERING: INTÄKTER-KORT
+   ============================================================== */
+function renderRevCard(pool) {
+  const sum = calcRev(pool);
+  return `
+    <div class="card">
+      <div class="card-head">
+        <span>💰</span>
+        <h3>Intäkter</h3>
+      </div>
+      <table class="data-tbl">
+        <tbody>
+          <tr>
+            <td class="konto">30</td>
+            <td>Försäljningsintäkter (kiosk m.m.)</td>
+            <td class="amt">
+              <input class="amt-in" type="number" value="${pool.revenue.forsaljning}"
+                     onchange="updRev('${pool.id}','forsaljning',this.value)"
+                     title="kto 30 – Försäljningsintäkter"> tkr
+            </td>
+          </tr>
+          <tr>
+            <td class="konto">3130</td>
+            <td>Taxor och avgifter (bad&shy;biljetter)</td>
+            <td class="amt">
+              <input class="amt-in" type="number" value="${pool.revenue.taxor}"
+                     onchange="updRev('${pool.id}','taxor',this.value)"
+                     title="kto 3130 – Taxor och avgifter"> tkr
+            </td>
+          </tr>
+          <tr class="sum">
+            <td class="konto"></td>
+            <td><strong>Summa intäkter</strong></td>
+            <td class="amt">${fmt(sum)} tkr</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="foot-note">Taxeintäkter (3130) budget ${state.year}: ${fmt(pool.revenue.taxor)} tkr.</div>
+    </div>`;
+}
+
+
+/* ==============================================================
+   RENDERING: KOSTNADER-KORT (exkl. personal)
+   ============================================================== */
+function renderCostCard(pool) {
+  const sum = calcCosts(pool);
+
+  // Energiraden – ej redigerbar om energi ingår i hyran
+  const energyRow = pool.energiIHyra
+    ? `<tr>
+         <td class="konto">62</td>
+         <td>Bränsle, energi och vatten
+           <span class="tag-pill tag-orange">⚡ Ingår i kto 6010</span>
+         </td>
+         <td class="amt" style="color:var(--muted)">– inkl. –</td>
+       </tr>`
+    : `<tr>
+         <td class="konto">62</td>
+         <td>Bränsle, energi och vatten</td>
+         <td class="amt">
+           <input class="amt-in" type="number" value="${pool.costs.energi}"
+                  onchange="updCost('${pool.id}','energi',this.value)"
+                  title="kto 62 – Bränsle, energi och vatten"> tkr
+         </td>
+       </tr>`;
+
+  return `
+    <div class="card">
+      <div class="card-head">
+        <span>📋</span>
+        <h3>Kostnader (exkl. personal)</h3>
+      </div>
+      ${pool.energiIHyra
+        ? `<div class="energy-banner">⚠️ <strong>OBS:</strong> Energikostnader ingår i lokalhyran (kto 6010) för ${pool.name}.</div>`
+        : ''}
+      <table class="data-tbl">
+        <tbody>
+          <tr>
+            <td class="konto">6010</td>
+            <td>Lokal- och bostadshyra
+              <span class="tag-pill tag-blue">🔄 Kompenseras</span>
+              ${pool.energiIHyra ? '<span class="tag-pill tag-orange">⚡ Inkl. energi</span>' : ''}
+            </td>
+            <td class="amt">
+              <input class="amt-in" type="number" value="${pool.costs.lokalhyra}"
+                     onchange="updCost('${pool.id}','lokalhyra',this.value)"
+                     title="kto 6010 – Internhyra (kompenseras till KoF)"> tkr
+            </td>
+          </tr>
+          ${energyRow}
+          <tr>
+            <td class="konto">64</td>
+            <td>Förbrukningsinvent. och materiel</td>
+            <td class="amt">
+              <input class="amt-in" type="number" value="${pool.costs.forbrukn}"
+                     onchange="updCost('${pool.id}','forbrukn',this.value)"
+                     title="kto 64 – Förbrukningsinventarier och materiel"> tkr
+            </td>
+          </tr>
+          <tr>
+            <td class="konto">69</td>
+            <td>Kostnader för transportmedel</td>
+            <td class="amt">
+              <input class="amt-in" type="number" value="${pool.costs.transport}"
+                     onchange="updCost('${pool.id}','transport',this.value)"
+                     title="kto 69 – Transportmedel"> tkr
+            </td>
+          </tr>
+          <tr>
+            <td class="konto">7</td>
+            <td>Övriga verksamhetskostnader</td>
+            <td class="amt">
+              <input class="amt-in" type="number" value="${pool.costs.ovrigt}"
+                     onchange="updCost('${pool.id}','ovrigt',this.value)"
+                     title="kto 7 – Övriga verksamhetskostnader"> tkr
+            </td>
+          </tr>
+          <tr>
+            <td class="konto">8</td>
+            <td>Övriga intäkter och kostnader</td>
+            <td class="amt">
+              <input class="amt-in" type="number" value="${pool.costs.ovrigtII}"
+                     onchange="updCost('${pool.id}','ovrigtII',this.value)"
+                     title="kto 8 – Övriga intäkter och kostnader"> tkr
+            </td>
+          </tr>
+          <tr class="sum">
+            <td class="konto"></td>
+            <td><strong>Summa kostnader (exkl. personal)</strong></td>
+            <td class="amt">${fmt(sum)} tkr</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="foot-note">
+        Lokalhyra kompenseras via KoF:s rambudget. Budget ${state.year} källa: Hypergene-uttag.
+      </div>
+    </div>`;
+}
+
+
+/* ==============================================================
+   RENDERING: PERSONALKOSTNADER
+   Sektionen visar: löneparametrar, preset-knappar, personaltabell.
+   ============================================================== */
+function renderPersonalSection(pool) {
+  const p = pool.personal;
+  const lkpF = 1 + p.lkp / 100;
+
+  // Beräkna delposter i tkr
+  const fteBr   = p.fte    * p.manadsLon * 12       / 1000;  // bruttolön FTE
+  const fteInkl = p.fte    * p.manadsLon * 12 * lkpF / 1000; // FTE inkl LKP
+  const timBr   = p.timmar * p.timLon               / 1000;  // bruttolön tim
+  const timInkl = p.timmar * p.timLon          * lkpF / 1000; // tim inkl LKP
+  const totalPersonal = fteInkl + timInkl;
+
+  // Enhetskostnader för displayen
+  const kosPerFte = svFmt.format(Math.round(p.manadsLon * 12 * lkpF / 1000));
+  const kosPerTim = svFmt.format(Math.round(p.timLon * lkpF));
+
+  // Preset-knappar inklusive "Eget val"
+  const presetBtns = Object.entries(pool.presets).map(([key, pr]) => `
+    <button class="preset-btn ${p.currentPreset === key ? 'on' : ''}"
+            onclick="applyPreset('${pool.id}','${key}')">
+      ${pr.label}<span class="preset-sub">${pr.sub}</span>
+    </button>`).join('');
+
+  return `
+    <div class="personal-card">
+      <div class="card-head" style="background:var(--navy)">
+        <span>👥</span>
+        <h3>Personalkostnader (ej objektkodade i system – kto 5)</h3>
+      </div>
+
+      <!--
+        Löneparametrar – tre inmatningsfält.
+        Varje fält är kopplat till pool.personal och påverkar
+        enbart detta bads beräkningar.
+      -->
+      <div class="param-bar">
+        <div class="param-grp">
+          <label>LKP – Lönekostnadspålägg</label>
+          <input type="number" step="0.5" min="0" max="100"
+                 value="${p.lkp}"
+                 onchange="updLkp('${pool.id}',this.value)"
+                 title="LKP: arbetsgivaravgifter + pension + övrigt">
+          <div class="param-sfx">% (default 41 %)</div>
+        </div>
+        <div class="param-grp">
+          <label>Genomsnittlig månadslön</label>
+          <input type="number" step="500" min="0"
+                 value="${p.manadsLon}"
+                 onchange="updManadsLon('${pool.id}',this.value)"
+                 title="Genomsnittlig månadslön i kronor (brutto)">
+          <div class="param-sfx">kr / månad (brutto)</div>
+        </div>
+        <div class="param-grp">
+          <label>Genomsnittlig timlön</label>
+          <input type="number" step="10" min="0"
+                 value="${p.timLon}"
+                 onchange="updTimLon('${pool.id}',this.value)"
+                 title="Genomsnittlig timlön för timanställda (brutto)">
+          <div class="param-sfx">kr / timme (brutto)</div>
+        </div>
+      </div>
+
+      <!--
+        Förinställda besättningsnivåer:
+        Minimal = begränsad öppning, Normal = standard, Hög = utökade öppettider.
+        Manuell ändring av FTE/timmar sätter preset till "Eget val".
+      -->
+      <div class="preset-bar">
+        <span class="preset-lbl">Besättningsnivå:</span>
+        ${presetBtns}
+        <button class="preset-btn ${p.currentPreset === 'eget' ? 'on' : ''}"
+                onclick="applyPreset('${pool.id}','eget')">
+          Eget val<span class="preset-sub">Ange manuellt nedan</span>
+        </button>
+      </div>
+
+      <!--
+        Personaltabell:
+        Rad 1 – heltidsanst (FTE): redigerbart antal
+        Rad 2 – timanst: redigerbara timmar
+        Summering visar bruttolön och totalkostnad inkl LKP.
+      -->
+      <table class="pers-tbl">
+        <thead>
+          <tr>
+            <th>Post</th>
+            <th>Antal / Timmar</th>
+            <th>Enhetskostnad inkl. LKP</th>
+            <th>Bruttolön (tkr)</th>
+            <th>Inkl. LKP (tkr)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Heltidsanst. (FTE)</td>
+            <td>
+              <input class="fte-in" type="number" step="0.5" min="0"
+                     value="${p.fte}"
+                     onchange="updFte('${pool.id}',this.value)"
+                     title="Antal heltidstjänster (årsarbetare)">
+              <span style="font-size:11px;color:var(--muted)"> st</span>
+            </td>
+            <td>${kosPerFte} tkr / FTE / år</td>
+            <td>${fmt(fteBr)}</td>
+            <td class="hi">${fmt(fteInkl)}</td>
+          </tr>
+          <tr>
+            <td>Timanställda</td>
+            <td>
+              <input class="fte-in" type="number" step="50" min="0"
+                     value="${p.timmar}"
+                     onchange="updTimmar('${pool.id}',this.value)"
+                     title="Antal timmar per år för timanställda">
+              <span style="font-size:11px;color:var(--muted)"> tim/år</span>
+            </td>
+            <td>${kosPerTim} kr / tim</td>
+            <td>${fmt(timBr)}</td>
+            <td class="hi">${fmt(timInkl)}</td>
+          </tr>
+          <tr class="tot-row">
+            <td colspan="3">Total personalkostnad</td>
+            <td>${fmt(fteBr + timBr)}</td>
+            <td>${fmt(totalPersonal)}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="foot-note">
+        Lönekostnader (kontogrupp 5) är i systemet inte kopplade till anläggningsobjekt.
+        Dessa är analytiska estimat. Formel: FTE × Lön × 12 × (1+LKP%) / 1000 tkr; 
+        Timmar × Timlön × (1+LKP%) / 1000 tkr.
+      </div>
+    </div>`;
+}
+
+
+/* ==============================================================
+   RENDERING: NETTORESULTAT-KORT
+   ============================================================== */
+function renderNettoCard(pool) {
+  const rev      = calcRev(pool);
+  const costs    = calcCosts(pool);
+  const personal = calcPersonal(pool);
+  const netto    = calcNetto(pool);
+  const nettoJ   = calcNettoJust(pool);
+
+  return `
+    <div class="netto-card">
+      <div class="netto-head">📊 Nettoresultat – ${pool.name} – ${state.year}</div>
+      <table class="netto-tbl">
+        <tbody>
+          <tr>
+            <td>Summa intäkter</td>
+            <td class="vp">+${fmt(rev)} tkr</td>
+          </tr>
+          <tr>
+            <td>Summa kostnader (exkl. personal)</td>
+            <td class="${vc(costs)}">${fmtSign(costs)} tkr</td>
+          </tr>
+          <tr>
+            <td>Personalkostnad – estimat (ej i system)</td>
+            <td class="${vc(personal)}">${fmtSign(personal)} tkr</td>
+          </tr>
+          <tr class="grand">
+            <td>NETTO (med personal)</td>
+            <td class="${vc(netto)}">${fmtSign(netto)} tkr</td>
+          </tr>
+          <tr class="adj-row">
+            <td>
+              Internhyra (kto 6010): ${fmtSign(pool.costs.lokalhyra)} tkr kompenseras till KoF
+              <br><strong>Justerat netto</strong> (exkl. internhyra)
+            </td>
+            <td class="${vc(nettoJ)}">${fmtSign(nettoJ)} tkr</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+}
+
+
+/* ==============================================================
+   RENDERING: FULLSTÄNDIGT FLIKINNEHÅLL FÖR ETT BAD
+   Sammansätter intäkter, kostnader, personal och netto.
+   ============================================================== */
+function renderPoolTab(poolId) {
+  const pool = state.pools[poolId];
+  const el   = document.getElementById(`tab-${poolId}`);
+  if (!el) return;
+
+  el.innerHTML = `
+    <div class="pool-header">
+      <div>
+        <div class="pool-title">${pool.name}</div>
+        <div class="badges">
+          <span class="badge">Objekt ${pool.objectCode}</span>
+          <span class="badge">${pool.type}</span>
+          <span class="badge">År ${state.year}</span>
+        </div>
+      </div>
+      <button class="reset-btn" onclick="resetPool('${pool.id}')">
+        ↩ Återställ defaultvärden
+      </button>
+    </div>
+
+    <div class="grid-2">
+      ${renderRevCard(pool)}
+      ${renderCostCard(pool)}
+    </div>
+
+    ${renderPersonalSection(pool)}
+    ${renderNettoCard(pool)}
+  `;
+}
+
+
+/* ==============================================================
+   RENDERING: TOTALT / SAMMANDRAG + CHART.JS-DIAGRAM
+   ============================================================== */
+let chartBar = null;
+let chartPie = null;
+
+function renderTotalTab() {
+  const el = document.getElementById('tab-totalt');
+  if (!el) return;
+
+  const pools = Object.values(state.pools);
+
+  // Beräkna rad-data för varje bad
+  const rows = pools.map(p => ({
+    name:      p.name,
+    shortName: p.name.replace('badet','bad').replace('Korsavad','Korsavad'),
+    rev:       calcRev(p),
+    costs:     calcCosts(p),
+    personal:  calcPersonal(p),
+    netto:     calcNetto(p),
+    nettoJ:    calcNettoJust(p),
+  }));
+
+  // Summera totaler
+  const T = rows.reduce((acc, r) => ({
+    rev:      acc.rev      + r.rev,
+    costs:    acc.costs    + r.costs,
+    personal: acc.personal + r.personal,
+    netto:    acc.netto    + r.netto,
+    nettoJ:   acc.nettoJ   + r.nettoJ,
+  }), { rev:0, costs:0, personal:0, netto:0, nettoJ:0 });
+
+  // Tabellrader HTML
+  const tblRows = rows.map(r => `
+    <tr>
+      <td>${r.name}</td>
+      <td class="${vc(r.rev)}">${fmt(r.rev)}</td>
+      <td class="${vc(r.costs)}">${fmt(r.costs)}</td>
+      <td class="${vc(r.personal)}">${fmt(r.personal)}</td>
+      <td class="${vc(r.netto)}" style="font-weight:700">${fmtSign(r.netto)}</td>
+      <td class="${vc(r.nettoJ)}" style="font-weight:700">${fmtSign(r.nettoJ)}</td>
+    </tr>`).join('');
+
+  el.innerHTML = `
+    <div class="pool-header">
+      <div>
+        <div class="pool-title">Totalt Sammandrag</div>
+        <div class="badges">
+          <span class="badge">Alla tre anläggningar</span>
+          <span class="badge">År ${state.year}</span>
+          <span class="badge">Ansvar 40100</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-head">
+        <span>📑</span>
+        <h3>Sammandrag – alla badanläggningar (tkr)</h3>
+      </div>
+      <table class="sum-tbl">
+        <thead>
+          <tr>
+            <th>Anläggning</th>
+            <th>Intäkter</th>
+            <th>Kostn. exkl. personal</th>
+            <th>Personalkostnad</th>
+            <th>Netto (inkl. personal)</th>
+            <th>Netto (exkl. internhyra)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tblRows}
+          <tr class="tot-row">
+            <td>TOTALT</td>
+            <td class="${vc(T.rev)}">${fmt(T.rev)}</td>
+            <td class="${vc(T.costs)}">${fmt(T.costs)}</td>
+            <td class="${vc(T.personal)}">${fmt(T.personal)}</td>
+            <td class="${vc(T.netto)}" style="font-weight:700">${fmtSign(T.netto)}</td>
+            <td class="${vc(T.nettoJ)}" style="font-weight:700">${fmtSign(T.nettoJ)}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="foot-note">
+        Netto inkl. personal = intäkter + kostnader + personalkostnad. 
+        Netto exkl. internhyra = netto + kto 6010 (kompenseras via rambudget).
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-ttl">Intäkter, kostnader och netto per anläggning (tkr)</div>
+        <canvas id="chartBar"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-ttl">Kostnadsfördelning</div>
+        <canvas id="chartPie"></canvas>
+      </div>
+    </div>
+  `;
+
+  // Rendera Chart.js efter att DOM är uppdaterat
+  requestAnimationFrame(() => buildCharts(rows));
+}
+
+
+/* ==============================================================
+   CHART.JS – stapel- och cirkeldiagram
+   ============================================================== */
+function buildCharts(rows) {
+  // Förstör eventuella befintliga diagram för att undvika minnesläckor
+  if (chartBar) { chartBar.destroy(); chartBar = null; }
+  if (chartPie) { chartPie.destroy(); chartPie = null; }
+
+  const labels = rows.map(r => r.shortName);
+
+  // ---- Stapeldiagram ----------------------------------------
+  const barEl = document.getElementById('chartBar');
+  if (!barEl) return;
+
+  chartBar = new Chart(barEl, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          // Intäkter – positiva staplar
+          label: 'Intäkter',
+          data: rows.map(r => r.rev),
+          backgroundColor: 'rgba(27,122,139,0.72)',
+          borderColor: '#1B7A8B',
+          borderWidth: 1.5,
+        },
+        {
+          // Kostnader exkl personal – visas som positiva abs-värden
+          label: 'Kostnader exkl. personal',
+          data: rows.map(r => Math.abs(r.costs)),
+          backgroundColor: 'rgba(190,90,20,0.65)',
+          borderColor: '#BE5A14',
+          borderWidth: 1.5,
+        },
+        {
+          // Personalkostnad – abs-värde
+          label: 'Personalkostnad',
+          data: rows.map(r => Math.abs(r.personal)),
+          backgroundColor: 'rgba(45,106,79,0.65)',
+          borderColor: '#2D6A4F',
+          borderWidth: 1.5,
+        },
+        {
+          // Netto justerat – som linje (mixed chart i Chart.js 4)
+          label: 'Netto (exkl. internhyra)',
+          type: 'line',
+          data: rows.map(r => r.nettoJ),
+          borderColor: rows.map(r => r.nettoJ >= 0 ? '#1A6830' : '#B5280F'),
+          backgroundColor: rows.map(r => r.nettoJ >= 0 ? 'rgba(26,104,48,0.15)' : 'rgba(181,40,15,0.15)'),
+          borderWidth: 2.5,
+          pointRadius: 5,
+          tension: 0.1,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { font: { size: 11 }, padding: 14, boxWidth: 14 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${svFmt.format(ctx.parsed.y)} tkr`
+          }
+        }
+      },
+      scales: {
+        y: {
+          ticks: {
+            callback: v => svFmt.format(v) + ' tkr',
+            font: { size: 11 }
+          },
+          grid: { color: 'rgba(0,0,0,0.06)' }
+        },
+        x: { ticks: { font: { size: 12 } } }
+      }
+    }
+  });
+
+  // ---- Cirkeldiagram: kostnadsfördelning -------------------
+  const pieEl = document.getElementById('chartPie');
+  if (!pieEl) return;
+
+  // Total kostnad per anläggning (kostnader + personal, absoluta)
+  const totCostPerPool = rows.map(r => Math.abs(r.costs + r.personal));
+
+  chartPie = new Chart(pieEl, {
+    type: 'doughnut',
+    data: {
+      labels: rows.map(r => r.shortName),
+      datasets: [{
+        data: totCostPerPool,
+        backgroundColor: [
+          'rgba(27,122,139,0.8)',
+          'rgba(45,106,79,0.8)',
+          'rgba(190,90,20,0.8)'
+        ],
+        borderColor: ['#1B7A8B', '#2D6A4F', '#BE5A14'],
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { font: { size: 11 }, padding: 10, boxWidth: 14 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const tot = totCostPerPool.reduce((a,b)=>a+b,0);
+              const pct = tot > 0 ? Math.round(ctx.parsed / tot * 100) : 0;
+              return `${ctx.label}: ${svFmt.format(ctx.parsed)} tkr (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+
+/* ==============================================================
+   RENDERINGSKOORDINATOR
+   Renderar om aktiv flik efter varje state-ändring.
+   ============================================================== */
+function renderAll() {
+  const active = document.querySelector('.tab-section.active');
+  if (!active) return;
+  const id = active.id.replace('tab-', '');
+  if (id === 'totalt') renderTotalTab();
+  else renderPoolTab(id);
+}
+
+
+/* ==============================================================
+   HÄNDELSEHANTERARE – koppling mellan DOM-händelse och state
+   ============================================================== */
+
+function updRev(pid, field, val) {
+  state.pools[pid].revenue[field] = Number(val) || 0;
+  renderAll();
+}
+
+function updCost(pid, field, val) {
+  state.pools[pid].costs[field] = Number(val) || 0;
+  renderAll();
+}
+
+function updLkp(pid, val) {
+  state.pools[pid].personal.lkp = Number(val) || 41;
+  renderAll();
+}
+
+function updManadsLon(pid, val) {
+  state.pools[pid].personal.manadsLon = Number(val) || 0;
+  renderAll();
+}
+
+function updTimLon(pid, val) {
+  state.pools[pid].personal.timLon = Number(val) || 0;
+  renderAll();
+}
+
+function updFte(pid, val) {
+  // Manuell ändring → sätt preset till "eget"
+  state.pools[pid].personal.fte = Number(val) || 0;
+  state.pools[pid].personal.currentPreset = 'eget';
+  renderAll();
+}
+
+function updTimmar(pid, val) {
+  state.pools[pid].personal.timmar = Number(val) || 0;
+  state.pools[pid].personal.currentPreset = 'eget';
+  renderAll();
+}
+
+/** Applicerar en av de tre förinställda personalbesättningsnivåerna */
+function applyPreset(pid, key) {
+  const pool = state.pools[pid];
+  pool.personal.currentPreset = key;
+  if (key !== 'eget' && pool.presets[key]) {
+    pool.personal.fte    = pool.presets[key].fte;
+    pool.personal.timmar = pool.presets[key].timmar;
+  }
+  renderAll();
+}
+
+/** Återställer ett bad till ursprungliga defaultvärden */
+function resetPool(pid) {
+  const pool = state.pools[pid];
+  const d    = pool._defaults;
+
+  // Djupkopiering av defaultvärden tillbaka till state
+  Object.assign(pool.revenue,   JSON.parse(JSON.stringify(d.revenue)));
+  Object.assign(pool.costs,     JSON.parse(JSON.stringify(d.costs)));
+  Object.assign(pool.personal,  JSON.parse(JSON.stringify(d.personal)));
+  pool.personal.currentPreset = 'normal';
+
+  renderAll();
+}
+
+function onYearChange(val) {
+  state.year = Number(val) || 2026;
+  renderAll();
+}
+
+
+/* ==============================================================
+   FLIKNAVIGERING
+   ============================================================== */
+function switchTab(tabId) {
+  // Dölj alla sektioner och avmarkera alla knappar
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+  // Aktivera vald flik
+  document.getElementById(`tab-${tabId}`)?.classList.add('active');
+  document.querySelector(`.tab-btn[data-tab="${tabId}"]`)?.classList.add('active');
+
+  // Rendera flikens innehåll
+  if (tabId === 'totalt') renderTotalTab();
+  else renderPoolTab(tabId);
+}
+
+
+/* ==============================================================
+   MODAL – teknikinformation
+   ============================================================== */
+function openModal() {
+  document.getElementById('mOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('mOverlay').classList.remove('open');
+}
+
+// Stäng modal vid klick på mörk bakgrund (utanför modal-boxen)
+function overlayClick(e) {
+  if (e.target === document.getElementById('mOverlay')) closeModal();
+}
+
+// Stäng modal med Escape-tangenten
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+
+/* ==============================================================
+   INITIALISERING – renderar startvyn (Tobisviksbadet)
+   ============================================================== */
+renderPoolTab('tobisviken');
+
+</script>
+</body>
+</html>
