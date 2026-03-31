@@ -108,6 +108,25 @@
       margin-top: 2px;
     }
 
+    /* Uppdatering: länkar till GitHub-repot och GitHub Pages (ömsesidig navigering med README på GitHub) */
+    .header-repo-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    .header-repo-links a {
+      color: rgba(255,255,255,0.92);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .header-repo-links a:hover {
+      color: #fff;
+    }
+
     /* Årsväljare i headern */
     .year-block {
       display: flex;
@@ -823,6 +842,10 @@
     <div class="header-tag">Simrishamns kommun · Kultur- och fritidsförvaltningen</div>
     <h1>Badanläggningskalkyl</h1>
     <div class="header-sub">Ansvar 40100 (Fritidsverksamhet) · Verksamhet 3400 · Kontoplan Kommun-BAS 26</div>
+    <nav class="header-repo-links" aria-label="Projekt på webben">
+      <a href="https://github.com/lundgren9/badkalkyl" target="_blank" rel="noopener noreferrer">Källkod på GitHub</a>
+      <a href="https://lundgren9.github.io/badkalkyl/" target="_blank" rel="noopener noreferrer">Live-version (GitHub&nbsp;Pages)</a>
+    </nav>
   </div>
   <div class="year-block">
     <label for="yr">Kalkyleringsår</label>
@@ -881,6 +904,13 @@
       <button class="modal-x" onclick="closeModal()" aria-label="Stäng">✕</button>
     </div>
     <div class="modal-bd">
+
+      <!-- Uppdatering: samma länkar som i header — repot ↔ publicerad sida -->
+      <div class="tech-sec">
+        <h3>Källkod och publicering</h3>
+        <p><strong>GitHub-repo:</strong> <a href="https://github.com/lundgren9/badkalkyl" target="_blank" rel="noopener noreferrer">github.com/lundgren9/badkalkyl</a><br>
+        <strong>Live (GitHub Pages):</strong> <a href="https://lundgren9.github.io/badkalkyl/" target="_blank" rel="noopener noreferrer">lundgren9.github.io/badkalkyl</a></p>
+      </div>
 
       <div class="tech-sec">
         <h3>Externa bibliotek via CDN</h3>

@@ -2,6 +2,15 @@
 
 Webbaserad kalkyl för badanläggningar inom ansvar **40100** (fritidsverksamhet), verksamhet **3400**, med utgångspunkt i **Kommun-BAS 26**. Applikationen hanterar Tobisviksbadet, Hammenhögsbadet och Korsavadbadet samt en samlad vy med diagram.
 
+## Länkar (repo ↔ live)
+
+| | |
+|--|--|
+| **Källkod, historik, kloning** | **[github.com/lundgren9/badkalkyl](https://github.com/lundgren9/badkalkyl)** |
+| **Live-version (GitHub Pages)** | **[lundgren9.github.io/badkalkyl](https://lundgren9.github.io/badkalkyl/)** |
+
+På den publicerade sidan finns i sidhuvudet och under *Teknikinformation* motsvarande länkar tillbaka till repot och till live-adressen.
+
 ## Live-version
 
 Programmet kan köras direkt i webbläsaren via **GitHub Pages**:
@@ -22,4 +31,4 @@ Använd PDF:en som referens för siffror och analys; kalkylappen är det interak
 
 Öppna `index.html` i en webbläsare, eller serva mappen med valfri lokal webbserver om du vill undvika begränsningar för vissa resurser.
 
-Repots källkod: [github.com/lundgren9/badkalkyl](https://github.com/lundgren9/badkalkyl).
+Repots startsida: [github.com/lundgren9/badkalkyl](https://github.com/lundgren9/badkalkyl) (se tabellen *Länkar* ovan).
