@@ -11,4 +11,6 @@ I repots **rot** ligger **`CLAUDE.md`** (stora bokstäver, i linje med Claude Co
 
 **HTML-filer i repot:** länka och utgå från **GitHub Pages**-URL:er (`https://lundgren9.github.io/badkalkyl/…`) när sidan ska visas eller diskuteras — **inte** `github.com/.../blob/...`, såvida användaren inte ber om källkods-/blob-vy eller lokalt öppnande.
 
+**Applikation:** gör ändringar bara i **`index.html`**, inte i **`badkalkyl.html`** (arkiv-/originalkopia) om användaren inte uttryckligen säger annat — se **`CLAUDE.md`**.
+
 Regeln är `alwaysApply: true` så att kontexten tas med utan att du behöver @-referera filen varje gång.

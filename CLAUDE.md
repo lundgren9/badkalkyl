@@ -31,6 +31,17 @@ Uppdatering: denna konvention tillagd på användarens önskemål.
 
 ---
 
+## Konvention: redigera bara **`index.html`** (inte **`badkalkyl.html`**)
+
+- **`index.html`** är den **aktiva** applikationsfilen (den som GitHub Pages använder som startsida och som ska utvecklas).
+- **`badkalkyl.html`** är en **kopia** som fungerar som **referens / ”original”**-arkiv av hur `index.html` sett ut vid något tillfälle — den ska **inte** uppdateras av assistenten i vanliga fall.
+
+**Instruktion till assistent:** Gör **alla** kod- och innehållsändringar i **`index.html`** (och i andra filer som användaren pekar ut). **Rör inte `badkalkyl.html`** om användaren **uttryckligen** inte ber dig ändra just den filen.
+
+Uppdatering: konvention tillagd — `badkalkyl.html` är avsedd som fryst kopia, inte parallell källkod.
+
+---
+
 ## CLAUDE.md och en **PRD** — samma sak?
 
 **Nej, inte riktigt** — de kan **komplettera** varandra.
@@ -49,14 +60,14 @@ Uppdatering: denna konvention tillagd på användarens önskemål.
 - **Källkod** (repo, issues, kloning): https://github.com/lundgren9/badkalkyl
 
 - **README.md** på GitHub länkar till live-sidan och beskriver repot.
-- **`index.html`** (och `badkalkyl.html`): i **sidhuvudet** länk till repot, **`CLAUDE.md`** (projektkontext) och **Git/GitHub-hjälp** (`github.html`). Under **Teknikinformation** finns även repot, live-URL och `github.html`.
+- **`index.html`:** i **sidhuvudet** länk till repot, **`CLAUDE.md`** (projektkontext) och **Git/GitHub-hjälp** (`github.html`). Under **Teknikinformation** finns även repot, live-URL och `github.html`. (`badkalkyl.html` kan fortfarande likna denna fil men underhålls inte av assistenten — se konventionen ovan.)
 
 ---
 
 ## Kort om projektet
 
 - **Simrishamns kommun** – badanläggningskalkyl: ansvar **40100**, verksamhet **3400**, **Kommun-BAS 26**.
-- **Teknik:** en huvudfil `index.html` med inbäddad CSS och JavaScript (ES6+); Chart.js och Google Fonts via CDN.
+- **Teknik:** huvudfil **`index.html`** med inbäddad CSS och JavaScript (ES6+); Chart.js och Google Fonts via CDN. Filen **`badkalkyl.html`** är arkivkopia — redigeras inte av assistenten utan särskild begäran.
 - **Publicering:** GitHub Pages från repot [lundgren9/badkalkyl](https://github.com/lundgren9/badkalkyl).
 - **Underlag PDF:** `260330_badanalys.pdf` – utfall och budget per **2026-03-30** (se README).
 - **Git/GitHub-hjälp:** `github.html` + `github-doc.css` (läsbar sida via Pages, inte via blob-URL); källtext i `github.md`.
